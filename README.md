@@ -1,7 +1,5 @@
 # OC Debug
 
-> **Status: release candidate, not yet public.** The unit tests, the example `validate` and `render` runs and the install-copy snippet passed in Docker. See [Verification](#verification) for the scope and test environment. Integration with live coding agents and with a software factory is still in progress.
-
 **OC Debug** is an evidence-first debugging skill for coding agents. It walks the agent through six steps: reproduce, classify, investigate, fix, guard and verify. It also ships a small tool built only on the Python standard library. The tool records which evidence was captured (PASS), which is missing (SKIP) and which could not be gathered (FAIL). It never declares a bug fixed.
 
 ## Contents
@@ -48,7 +46,7 @@ The tests run as the image's non-root user and write only to the container's `/t
 
 ## Verification
 
-These results were observed for this release candidate. It was built from the pinned base in `Dockerfile` with Docker Engine 29.1.3 on Linux x86_64 (CPython 3.12.15, running as uid 65532). The tree was not yet a tagged commit:
+The following checks passed in Docker using the pinned base in `Dockerfile`, Docker Engine 29.1.3 on Linux x86_64, and CPython 3.12.15 running as uid 65532:
 
 - All 15 unit tests passed. They cover `collect`, `append`, `validate`, `render` and CLI error exits.
 - `validate` and `render` succeeded on `examples/findings.json` (9 records).
