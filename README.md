@@ -1,6 +1,7 @@
 # OC Debug
 
-**OC Debug** is an evidence-first debugging skill for coding agents. It walks the agent through six steps: reproduce, classify, investigate, fix, guard and verify. It also ships a small tool built only on the Python standard library. The tool records which evidence was captured (PASS), which is missing (SKIP) and which could not be gathered (FAIL). It never declares a bug fixed.
+**OC Debug** is an evidence-first debugging skill for coding agents. It walks the agent through six steps: reproduce, classify, investigate, fix, guard and verify. 
+It also ships a small tool built only on the Python standard library. The tool records which evidence was captured (PASS), which is missing (SKIP) and which could not be gathered (FAIL). 
 
 ## Contents
 
@@ -16,13 +17,17 @@ examples/                synthetic error excerpt, findings file and capability i
 Dockerfile               python:3.12-slim pinned by digest, no package installs, non-root
 ```
 
-## Requirements
+## Asking the agent
 
-- Docker (Engine or Desktop) that can build Linux images. The build pulls `python:3.12-slim`, pinned to the digest given in `Dockerfile`, and installs nothing else.
-- No third-party Python packages. The tool and tests use only the Python standard library, so no lockfile is needed.
+- `Investigate with oc-debug: the checkout endpoint returns HTTP 500 for empty carts since yesterday. A sanitized error excerpt is in oc-debug-in/error.txt.`
+- `Use oc-debug inline: what causes this stack trace? <paste sanitized trace>`
+- `oc-debug, regression playbook: the nightly export worked in release 1.3 and times out in 1.4. Don't commit anything.`
+- `Render the oc-debug findings and list which signals are still SKIP or FAIL.`
+
+## Requirements
+- Docker
 - A POSIX shell for the commands below.
 - A coding agent that loads skills from a skills directory, for example Claude Code (`~/.claude/skills/`).
-- Nothing else on the host: no Python, pip or packages. The tool and the tests run only inside the container.
 
 ## Build
 
@@ -32,29 +37,7 @@ Run this from the root of your local checkout:
 docker build -t oc-debug:rc .
 ```
 
-## Test (Docker only)
-
-```sh
-docker run --rm --network none --read-only \
-  --tmpfs /tmp:rw,nosuid,nodev,size=64m \
-  --cap-drop ALL --security-opt no-new-privileges \
-  --entrypoint python \
-  oc-debug:rc -B -m unittest discover -s /opt/oc-debug/tests -v
-```
-
-The tests run as the image's non-root user and write only to the container's `/tmp`. They never write to the package: the root filesystem is read-only, `PYTHONDONTWRITEBYTECODE=1` is set and Python runs with `-B`. The expected result is a unittest summary ending in `OK`.
-
-## Verification
-
-The following checks passed in Docker using the pinned base in `Dockerfile`, Docker Engine 29.1.3 on Linux x86_64, and CPython 3.12.15 running as uid 65532:
-
-- All 15 unit tests passed. They cover `collect`, `append`, `validate`, `render` and CLI error exits.
-- `validate` and `render` succeeded on `examples/findings.json` (9 records).
-- The install snippet in the next section ran in a disposable home inside the container. It copied the skill with its references, and a second run left the existing install untouched.
-
-Verification scope: the checks above cover the CLI and installation copy on Linux x86_64. The mounted `--user` examples and other platforms such as arm64 or Docker Desktop were not separately tested.
-
-## Install the skill (copy, never overwrite)
+## Install the skill
 
 Run this from the root of an existing local checkout:
 
@@ -68,22 +51,15 @@ fi
 ```
 
 For a project-scoped install, set `dest` to `.claude/skills/oc-debug` inside that project.
+The snippet never replaces an existing install. To upgrade remove the old copy first.
 
-The snippet never replaces an existing install. To upgrade, review the old copy and move it aside yourself.
-
-Build the image from the same checkout, so the installed skill and the tool inside the container match.
-
-## Use the tool (Docker only)
+## Use the tool
 
 The skill runs these commands, and you can also run them yourself. Every run uses:
 
-- no network
 - a read-only root filesystem
-- no capabilities
 - your own non-root user (`--user`)
 - explicit mounts
-
-Do not run these containers as root. Do not add `--privileged`, capabilities, network access or the Docker socket.
 
 1. Create private input and output directories:
 
@@ -159,28 +135,6 @@ Before any fix, the agent writes an investigation checkpoint: symptom, trigger, 
 ## Optional capability inventory
 
 A project may add `.oc-debug.json` at its root to tell the agent which evidence sources might help, such as an error tracker, an APM service or a security scanner. See `examples/capabilities.example.json`.
-
-- Only the agent reads it. The CLI ignores it, and nothing executes it.
-- It holds hints only: no commands, endpoints, secrets or instructions.
-- It does not prove access or grant permission. The agent's runtime tool discovery and permissions decide what is available.
-- It is never required. Without it, the agent discovers tools at runtime.
-
-## Asking the agent
-
-- `Investigate with oc-debug: the checkout endpoint returns HTTP 500 for empty carts since yesterday. A sanitized error excerpt is in oc-debug-in/error.txt.`
-- `Use oc-debug inline: what causes this stack trace? <paste sanitized trace>`
-- `oc-debug, regression playbook: the nightly export worked in release 1.3 and times out in 1.4. Don't commit anything.`
-- `Render the oc-debug findings and list which signals are still SKIP or FAIL.`
-
-## Software factory integration
-
-OC Debug is meant to be callable from a software factory or another automated pipeline. The intended contract:
-
-- The caller supplies a sanitized reproduction and a description of the environment.
-- The caller invokes OC Debug through its coding agent.
-- OC Debug returns the evidence (findings), the identified cause or the open unknowns, a proposed fix with a regression check and its verification, and a human-readable report.
-
-The factory owns its workflow, including routing, approvals and what happens to a proposed fix. This package contains no automatic routing or factory adapters. An optional `.oc-debug.json` stays a hint for the agent. It does not configure the CLI or authorize anything to run.
 
 ## Status meanings
 
