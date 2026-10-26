@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "capabilities": [
+    {
+      "signal": "code-surface",
+      "provider_hint": "Aikido",
+      "capability": "security findings that point to affected code paths and dependencies",
+      "tool_hint": "a security scanning connector, if one is available"
+    },
+    {
+      "signal": "logs",
+      "provider_hint": "GlitchTip",
+      "capability": "grouped application errors with stack traces and event times",
+      "tool_hint": "an error tracking connector, if one is available"
+    },
+    {
+      "signal": "logs",
+      "provider_hint": "Cloudflare",
+      "capability": "edge request outcomes, status codes and firewall events",
+      "tool_hint": "a CDN or edge analytics connector, if one is available"
+    },
+    {
+      "signal": "apm",
+      "provider_hint": "New Relic",
+      "capability": "transaction traces and span timing for backend requests",
+      "tool_hint": "an APM connector, if one is available"
+    }
+  ]
+}

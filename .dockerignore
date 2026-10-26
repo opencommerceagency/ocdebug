@@ -1,0 +1,10 @@
+# Only package sources, tests and synthetic examples enter the build context.
+*
+!skills/
+!skills/**
+!tests/
+!tests/**
+!examples/
+!examples/**
+**/__pycache__
+**/*.pyc

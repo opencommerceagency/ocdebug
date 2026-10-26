@@ -1,0 +1,5 @@
+2026-01-15T10:42:07Z ERROR example-shop checkout request_id=demo-0001
+TypeError: Cannot read properties of undefined (reading 'total')
+    at calculateCartTotal (src/cart/totals.js:42:18)
+    at handleCheckout (src/routes/checkout.js:88:11)
+    at processRequest (src/server/router.js:120:5)

@@ -1,0 +1,74 @@
+[
+  {
+    "signal": "baseline",
+    "status": "PASS",
+    "proof_of_work": "verified",
+    "correlation_id": "demo-0001",
+    "logfile": "/in/error.txt",
+    "detail": "User-provided excerpt, not redacted by OC Debug:\n2026-01-15T10:42:07Z ERROR example-shop checkout request_id=demo-0001\nTypeError: Cannot read properties of undefined (reading 'total')\n    at calculateCartTotal (src/cart/totals.js:42:18)\n    at handleCheckout (src/routes/checkout.js:88:11)\n    at processRequest (src/server/router.js:120:5)"
+  },
+  {
+    "signal": "code-surface",
+    "status": "SKIP",
+    "proof_of_work": "unverified",
+    "correlation_id": "demo-0001",
+    "logfile": null,
+    "detail": "Not collected automatically. Read the relevant code and record it with append."
+  },
+  {
+    "signal": "logs",
+    "status": "SKIP",
+    "proof_of_work": "unverified",
+    "correlation_id": "demo-0001",
+    "logfile": null,
+    "detail": "No logs file provided (optional)."
+  },
+  {
+    "signal": "change",
+    "status": "SKIP",
+    "proof_of_work": "unverified",
+    "correlation_id": "demo-0001",
+    "logfile": null,
+    "detail": "Not collected automatically: commit authors and messages can leak personal or client data. Append a sanitized change summary by hand if relevant."
+  },
+  {
+    "signal": "apm",
+    "status": "SKIP",
+    "proof_of_work": "unverified",
+    "correlation_id": "demo-0001",
+    "logfile": null,
+    "detail": "Not collected automatically. Append a sanitized APM or trace summary if one exists."
+  },
+  {
+    "signal": "browser",
+    "status": "SKIP",
+    "proof_of_work": "unverified",
+    "correlation_id": "demo-0001",
+    "logfile": null,
+    "detail": "Not collected automatically. Append a sanitized console or network excerpt if relevant."
+  },
+  {
+    "signal": "docs",
+    "status": "SKIP",
+    "proof_of_work": "unverified",
+    "correlation_id": "demo-0001",
+    "logfile": null,
+    "detail": "Not collected automatically. Append the documentation reference consulted, if any."
+  },
+  {
+    "signal": "code-surface",
+    "status": "PASS",
+    "proof_of_work": "verified",
+    "correlation_id": "demo-0001",
+    "logfile": null,
+    "detail": "Synthetic example: calculateCartTotal reads cart.summary.total, but carts emptied by the client have no summary object."
+  },
+  {
+    "signal": "change",
+    "status": "PASS",
+    "proof_of_work": "verified",
+    "correlation_id": "demo-0001",
+    "logfile": null,
+    "detail": "Synthetic example, summarized by hand: failures began after the cart serializer stopped emitting an empty summary for empty carts."
+  }
+]
