@@ -210,4 +210,6 @@ A FAIL finding is evidence, not a tool failure, so it does not change the exit c
 
 ## Licensing
 
-A licence has not yet been selected. This package currently grants no licence.
+Licensed under the [MIT License](LICENSE). Copyright (c) 2026 Open Commerce.
+
+The Python and Debian components in the Docker base image retain their respective upstream licences.
