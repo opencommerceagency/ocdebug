@@ -1,6 +1,6 @@
 # OC Debug
 
-> **Status: release candidate, untested.** The tests and Docker commands in this package were written but have not been run for this release candidate. Run them and record the results in `RELEASE_CHECKLIST.md` before relying on or publishing the package.
+> **Status: release candidate, not yet public.** The unit tests, the example `validate` and `render` runs and the install-copy snippet passed in Docker. See [Verification](#verification) for the scope and test environment. Integration with live coding agents and with a software factory is still in progress.
 
 **OC Debug** is an evidence-first debugging skill for coding agents. It walks the agent through six steps: reproduce, classify, investigate, fix, guard and verify. It also ships a small tool built only on the Python standard library. The tool records which evidence was captured (PASS), which is missing (SKIP) and which could not be gathered (FAIL). It never declares a bug fixed.
 
@@ -15,14 +15,13 @@ skills/oc-debug/
   tools/oc_debug.py      collect, append, render, validate (stdlib only)
 tests/test_oc_debug.py   unittest suite, run in Docker
 examples/                synthetic error excerpt, findings file and capability inventory
-Dockerfile               python:3.12-slim, no package installs, non-root
-PROVENANCE.md            origin, rights and licensing status
-RELEASE_CHECKLIST.md     steps required before any release
+Dockerfile               python:3.12-slim pinned by digest, no package installs, non-root
 ```
 
 ## Requirements
 
-- Docker (Engine or Desktop) that can build Linux images. The build pulls `python:3.12-slim` and installs nothing else.
+- Docker (Engine or Desktop) that can build Linux images. The build pulls `python:3.12-slim`, pinned to the digest given in `Dockerfile`, and installs nothing else.
+- No third-party Python packages. The tool and tests use only the Python standard library, so no lockfile is needed.
 - A POSIX shell for the commands below.
 - A coding agent that loads skills from a skills directory, for example Claude Code (`~/.claude/skills/`).
 - Nothing else on the host: no Python, pip or packages. The tool and the tests run only inside the container.
@@ -45,7 +44,17 @@ docker run --rm --network none --read-only \
   oc-debug:rc -B -m unittest discover -s /opt/oc-debug/tests -v
 ```
 
-The tests run as the image's non-root user and write only to the container's `/tmp`. They never write to the package: the root filesystem is read-only, `PYTHONDONTWRITEBYTECODE=1` is set and Python runs with `-B`. The expected result is a unittest summary ending in `OK`. That result has not yet been observed for this release candidate.
+The tests run as the image's non-root user and write only to the container's `/tmp`. They never write to the package: the root filesystem is read-only, `PYTHONDONTWRITEBYTECODE=1` is set and Python runs with `-B`. The expected result is a unittest summary ending in `OK`.
+
+## Verification
+
+These results were observed for this release candidate. It was built from the pinned base in `Dockerfile` with Docker Engine 29.1.3 on Linux x86_64 (CPython 3.12.15, running as uid 65532). The tree was not yet a tagged commit:
+
+- All 15 unit tests passed. They cover `collect`, `append`, `validate`, `render` and CLI error exits.
+- `validate` and `render` succeeded on `examples/findings.json` (9 records).
+- The install snippet in the next section ran in a disposable home inside the container. It copied the skill with its references, and a second run left the existing install untouched.
+
+Not yet verified: use by a live coding agent, integration with a software factory, the mounted `--user` commands under "Use the tool", and other platforms such as arm64 or Docker Desktop.
 
 ## Install the skill (copy, never overwrite)
 
@@ -165,6 +174,16 @@ A project may add `.oc-debug.json` at its root to tell the agent which evidence 
 - `oc-debug, regression playbook: the nightly export worked in release 1.3 and times out in 1.4. Don't commit anything.`
 - `Render the oc-debug findings and list which signals are still SKIP or FAIL.`
 
+## Software factory integration (in progress)
+
+OC Debug is meant to be callable from a software factory or another automated pipeline. The intended contract:
+
+- The caller supplies a sanitized reproduction and a description of the environment.
+- The caller invokes OC Debug through its coding agent.
+- OC Debug returns the evidence (findings), the identified cause or the open unknowns, a proposed fix with a regression check and its verification, and a human-readable report.
+
+The factory owns its workflow, including routing, approvals and what happens to a proposed fix. This package contains no automatic routing or factory adapters. The contract has not yet been verified against a real factory. An optional `.oc-debug.json` stays a hint for the agent. It does not configure the CLI or authorize anything to run.
+
 ## Status meanings
 
 | Status | proof_of_work | Meaning |
@@ -189,10 +208,6 @@ A FAIL finding is evidence, not a tool failure, so it does not change the exit c
 - Rendered reports escape Markdown, HTML and control characters. Their content is still untrusted diagnostic data.
 - The tool makes no uploads, runs no shell commands, does not use the Docker socket and does not scrape logs across a repository.
 
-## Provenance and licensing
+## Licensing
 
-OC Debug is adapted conceptually from an internal tool, OCPM Debug. Ownership and permission must be confirmed before release. This package grants no licence. See `PROVENANCE.md` and `RELEASE_CHECKLIST.md`.
-
-## Presentation description
-
-OC Debug turns debugging into an evidence-driven loop: reproduce, investigate, fix, guard and verify. Its portable agent skill and Docker-only tools keep missing evidence visible and produce readable findings without declaring a bug fixed prematurely. Public release is pending testing and licensing approval.
+A licence has not yet been selected. This package currently grants no licence.
