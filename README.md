@@ -52,7 +52,7 @@ The following checks passed in Docker using the pinned base in `Dockerfile`, Doc
 - `validate` and `render` succeeded on `examples/findings.json` (9 records).
 - The install snippet in the next section ran in a disposable home inside the container. It copied the skill with its references, and a second run left the existing install untouched.
 
-Verification scope: the checks above cover the CLI and installation copy on Linux x86_64. The mounted `--user` examples and other platforms such as arm64 or Docker Desktop were not separately tested. Live-agent and software-factory integration testing is in progress; factory integration is optional for standalone use.
+Verification scope: the checks above cover the CLI and installation copy on Linux x86_64. The mounted `--user` examples and other platforms such as arm64 or Docker Desktop were not separately tested.
 
 ## Install the skill (copy, never overwrite)
 
@@ -172,7 +172,7 @@ A project may add `.oc-debug.json` at its root to tell the agent which evidence 
 - `oc-debug, regression playbook: the nightly export worked in release 1.3 and times out in 1.4. Don't commit anything.`
 - `Render the oc-debug findings and list which signals are still SKIP or FAIL.`
 
-## Software factory integration (in progress)
+## Software factory integration
 
 OC Debug is meant to be callable from a software factory or another automated pipeline. The intended contract:
 
@@ -180,7 +180,7 @@ OC Debug is meant to be callable from a software factory or another automated pi
 - The caller invokes OC Debug through its coding agent.
 - OC Debug returns the evidence (findings), the identified cause or the open unknowns, a proposed fix with a regression check and its verification, and a human-readable report.
 
-The factory owns its workflow, including routing, approvals and what happens to a proposed fix. This package contains no automatic routing or factory adapters. The contract has not yet been verified against a real factory. An optional `.oc-debug.json` stays a hint for the agent. It does not configure the CLI or authorize anything to run.
+The factory owns its workflow, including routing, approvals and what happens to a proposed fix. This package contains no automatic routing or factory adapters. An optional `.oc-debug.json` stays a hint for the agent. It does not configure the CLI or authorize anything to run.
 
 ## Status meanings
 
