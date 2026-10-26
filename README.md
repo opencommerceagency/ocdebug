@@ -52,7 +52,7 @@ The following checks passed in Docker using the pinned base in `Dockerfile`, Doc
 - `validate` and `render` succeeded on `examples/findings.json` (9 records).
 - The install snippet in the next section ran in a disposable home inside the container. It copied the skill with its references, and a second run left the existing install untouched.
 
-Not yet verified: use by a live coding agent, integration with a software factory, the mounted `--user` commands under "Use the tool", and other platforms such as arm64 or Docker Desktop.
+Verification scope: the checks above cover the CLI and installation copy on Linux x86_64. The mounted `--user` examples and other platforms such as arm64 or Docker Desktop were not separately tested. Live-agent and software-factory integration testing is in progress; factory integration is optional for standalone use.
 
 ## Install the skill (copy, never overwrite)
 
